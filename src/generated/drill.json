@@ -1,0 +1,86 @@
+{
+  "measured": "2026-09-24",
+  "drill": {
+    "baseMs": 5,
+    "stallMs": 400,
+    "stallEveryMs": 2000,
+    "ratePerSecond": 100,
+    "durationMs": 6000,
+    "repeats": 3
+  },
+  "harnesses": [
+    {
+      "harness": "closed loop, send and wait",
+      "requests": 185,
+      "max": 417,
+      "p50": 30,
+      "p75": 31,
+      "p90": 32,
+      "p95": 34,
+      "p99": 411,
+      "slip": null
+    },
+    {
+      "harness": "open loop, send on the clock",
+      "requests": 600,
+      "max": 421,
+      "p50": 31,
+      "p75": 43,
+      "p90": 227,
+      "p95": 326,
+      "p99": 405,
+      "slip": {
+        "p50": 6,
+        "p75": 10,
+        "p90": 13,
+        "p95": 14,
+        "p99": 15,
+        "max": 16,
+        "lateBy5ms": 319
+      }
+    }
+  ],
+  "runs": [
+    {
+      "closedRequests": 185,
+      "closedP95": 34,
+      "openP95": 335,
+      "p95Ratio": 9.9,
+      "openSlipP99": 15
+    },
+    {
+      "closedRequests": 184,
+      "closedP95": 34,
+      "openP95": 320,
+      "p95Ratio": 9.4,
+      "openSlipP99": 15
+    },
+    {
+      "closedRequests": 185,
+      "closedP95": 34,
+      "openP95": 326,
+      "p95Ratio": 9.6,
+      "openSlipP99": 15
+    }
+  ],
+  "verdict": {
+    "ratios": {
+      "p50": 1,
+      "p75": 1.4,
+      "p90": 7.1,
+      "p95": 9.6,
+      "p99": 1
+    },
+    "widest": {
+      "percentile": "p95",
+      "ratio": 9.6
+    },
+    "requestsClosed": 185,
+    "requestsOpen": 600,
+    "intendedRequests": 600,
+    "sentShareOfIntended": 0.31,
+    "slipP99": 15,
+    "effectMs": 292,
+    "slipShareOfEffect": 0.051
+  }
+}
