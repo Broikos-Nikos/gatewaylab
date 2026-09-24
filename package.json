@@ -9,14 +9,17 @@
     "build": "tsc --noEmit && npm run check && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "check": "npm run check:source && npm run check:drill && npm run check:harness && npm run check:spread",
+    "check": "npm run check:source && npm run check:drill && npm run check:harness && npm run check:spread && npm run check:claims",
     "check:source": "node tools/check-source.mjs",
     "check:drill": "node tools/check-drill.mjs",
     "check:harness": "node tools/check-harness.mjs",
     "check:spread": "node tools/check-spread.mjs",
     "run:drill": "node tools/run-drill.mjs",
     "check:page": "node tools/check-page.mjs",
-    "verify": "node tools/verify.mjs"
+    "verify": "node tools/verify.mjs",
+    "capture": "node tools/capture.mjs",
+    "check:capture": "node tools/check-capture.mjs",
+    "check:claims": "node tools/check-claims.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.13.6",

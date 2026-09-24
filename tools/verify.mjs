@@ -24,7 +24,7 @@ import { serve } from './serve.mjs'
  * gates failed" against a project that simply has no capture yet, and that
  * failure was committed once before anybody read the line under the build.
  */
-const GATES = ['check:page']
+const GATES = ['check:page', 'check:capture']
 
 const server = await serve()
 let failed = 0
