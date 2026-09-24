@@ -14,7 +14,9 @@
     "check:drill": "node tools/check-drill.mjs",
     "check:harness": "node tools/check-harness.mjs",
     "check:spread": "node tools/check-spread.mjs",
-    "run:drill": "node tools/run-drill.mjs"
+    "run:drill": "node tools/run-drill.mjs",
+    "check:page": "node tools/check-page.mjs",
+    "verify": "node tools/verify.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.13.6",

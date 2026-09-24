@@ -1,0 +1,136 @@
+/*
+ * The house palette, the same tokens as the other four projects, read from
+ * broikos.gr's own stylesheet rather than matched by eye. The neutrals are warm:
+ * #080604 carries more red than blue.
+ *
+ * The accent is spent on one thing per screen. Here that thing is the threshold,
+ * because the threshold is the entire argument: everything below it is a
+ * question the data cannot be asked.
+ */
+:root {
+  --ink: #080604;
+  --lift: #141010;
+  --edge: #2e2621;
+  --text: #ffffff;
+  --dim: #9a8f88;
+  --faint: #8a7f76;
+
+  --flame: #ff6a00;
+  --flame-bright: #ff8a1f;
+  --focus: #ff8a1f;
+
+  --sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', 'Roboto Mono', monospace;
+  --gutter: clamp(1rem, 4vw, 3rem);
+
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box }
+
+body {
+  margin: 0;
+  padding: 0 var(--gutter) 5rem;
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.6;
+}
+
+header { max-width: 60rem; padding: 4rem 0 2rem }
+
+.wordmark {
+  margin: 0 0 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  color: var(--faint);
+}
+
+h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.9rem, 5.2vw, 3.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+.standfirst { margin: 0; max-width: 54ch; color: var(--dim); font-size: 1.02rem }
+
+main { max-width: 62rem }
+
+/* The picture: two passes over the same six seconds. */
+.timeline { display: grid; gap: 1.25rem; margin: 0 0 1.25rem }
+
+.row { display: grid; gap: 0.4rem }
+
+.row__head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem }
+.row__name { font-size: 0.92rem; font-weight: 600 }
+.row__note { font-family: var(--mono); font-size: 0.72rem; color: var(--faint) }
+
+/*
+ * The track is one continuous six seconds. Marks and bands are positioned as a
+ * percentage of it, so the two rows are the same instants at the same x and a
+ * reader comparing them is comparing like with like.
+ */
+.track {
+  position: relative;
+  height: 7rem;
+  background: var(--lift);
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* The server is not answering. Underneath everything, so marks sit on top. */
+.band { position: absolute; top: 0; bottom: 0; background: #2a1c12 }
+
+/*
+ * One request, at the time it was sent, as tall as it took. Bottom aligned so
+ * the eye reads height as duration rather than as position.
+ */
+.mark {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  background: var(--dim);
+}
+
+.mark--slow { background: var(--flame) }
+
+.status { margin: 0 0 1.75rem; max-width: 72ch; color: var(--dim); font-size: 0.92rem }
+
+.table { margin: 0 0 1.75rem }
+.table__head { margin: 0 0 0.75rem; max-width: 76ch; color: var(--faint); font-size: 0.86rem }
+
+.trow {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1.25rem;
+  align-items: baseline;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  margin-bottom: 0.4rem;
+}
+
+.trow__name { font-size: 0.9rem }
+.trow__num { font-family: var(--mono); font-size: 0.78rem; color: var(--faint) }
+
+.caption { margin: 0 0 2rem; max-width: 76ch; color: var(--faint); font-size: 0.86rem }
+
+footer {
+  max-width: 76ch;
+  padding-top: 2rem;
+  border-top: 1px solid var(--edge);
+  color: var(--faint);
+  font-size: 0.8rem;
+}
+
+/* At phone width the four column row has nowhere to go, so it stacks. */
+@media (max-width: 40rem) {
+  .track { height: 5rem }
+  .trow { grid-template-columns: 1fr auto; row-gap: 0.25rem }
+  .trow__name { grid-column: 1 / -1 }
+}

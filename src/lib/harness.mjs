@@ -81,7 +81,10 @@ export function startServer({ baseMs, stallMs, stallEveryMs }) {
     res.end('ok')
   })
   return new Promise((ok) => {
-    server.listen(0, '127.0.0.1', () => ok({ server, port: server.address().port }))
+    // `started` comes back because the stall cycle is measured from it, and a
+    // client's own clock starts a few milliseconds later. Shading drawn from
+    // the client's clock would be off by that much and would look fitted.
+    server.listen(0, '127.0.0.1', () => ok({ server, port: server.address().port, started }))
   })
 }
 
@@ -90,16 +93,27 @@ async function once(url) {
   await res.text()
 }
 
-/** Send, wait, send. The obvious shape, and the one that stops asking. */
-export async function closedLoop(url, durationMs) {
+/**
+ * Send, wait, send. The obvious shape, and the one that stops asking.
+ *
+ * `samples` is `[sentAtMs, latencyMs]` per request, relative to `origin`, which
+ * is what the page draws. They are kept because the argument of this project is
+ * visible in *when* the requests were sent rather than in the percentiles: the
+ * closed loop's sends go quiet for the length of each stall, and a summary
+ * cannot show that.
+ */
+export async function closedLoop(url, durationMs, origin = Date.now()) {
   const latencies = []
+  const samples = []
   const until = Date.now() + durationMs
   while (Date.now() < until) {
     const t0 = Date.now()
     await once(url)
-    latencies.push(Date.now() - t0)
+    const took = Date.now() - t0
+    latencies.push(took)
+    samples.push([t0 - origin, took])
   }
-  return { latencies, slips: [] }
+  return { latencies, slips: [], samples }
 }
 
 /**
@@ -110,11 +124,12 @@ export async function closedLoop(url, durationMs) {
  * behind it, which is the harness's own error and is reported rather than
  * absorbed.
  */
-export async function openLoop(url, durationMs, ratePerSecond) {
+export async function openLoop(url, durationMs, ratePerSecond, origin = Date.now()) {
   const gap = 1000 / ratePerSecond
   const start = Date.now()
   const latencies = []
   const slips = []
+  const samples = []
   const inFlight = []
   let due = 0
   for (let i = 0; ; i++) {
@@ -126,28 +141,79 @@ export async function openLoop(url, durationMs, ratePerSecond) {
     slips.push(Date.now() - at)
     inFlight.push(
       once(url)
-        .then(() => latencies.push(Date.now() - at))
+        .then(() => {
+          const took = Date.now() - at
+          latencies.push(took)
+          // Due time, not send time. A request that went out late was already
+          // waiting, which is the whole reason this harness exists.
+          samples.push([at - origin, took])
+        })
         .catch(() => {}),
     )
   }
   await Promise.all(inFlight)
-  return { latencies, slips, due }
+  return { latencies, slips, due, samples }
 }
 
 /** One run of both harnesses against one server. */
 export async function runOnce(drill) {
-  const { server, port } = await startServer(drill)
+  const { server, port, started } = await startServer(drill)
   const url = `http://127.0.0.1:${port}/`
-  // The closed loop first, alone, so neither client competes with the other for
-  // the server or for the event loop.
-  const c = await closedLoop(url, drill.durationMs)
-  const o = await openLoop(url, drill.durationMs, drill.ratePerSecond)
+  /*
+   * Both clients share one origin, so their samples sit on one timeline and the
+   * stall windows land in the same place for both. The closed loop runs first
+   * and alone, so neither competes with the other for the server or the event
+   * loop, which means the open loop's samples start where the closed loop's end
+   * and the page draws them as two passes over the same six seconds.
+   */
+  const origin = Date.now()
+  const c = await closedLoop(url, drill.durationMs, origin)
+  const openOrigin = Date.now()
+  const o = await openLoop(url, drill.durationMs, drill.ratePerSecond, openOrigin)
   server.close()
   return {
     closed: summarise('closed loop, send and wait', c.latencies, c.slips),
     open: summarise('open loop, send on the clock', o.latencies, o.slips),
     due: o.due,
+    samples: { closed: c.samples, open: o.samples },
+    /*
+     * Where the stalls fall on each client's own timeline, computed from the
+     * server's clock rather than detected in the samples, so the shading is not
+     * fitted to the data it is supposed to explain.
+     *
+     * `phase` is how far into a stall cycle the server already was when that
+     * client started, so the client's first stall begins at
+     * `(stallEveryMs - phase) % stallEveryMs` and every `stallEveryMs` after.
+     */
+    stallPhase: {
+      closed: (origin - started) % drill.stallEveryMs,
+      open: (openOrigin - started) % drill.stallEveryMs,
+    },
   }
+}
+
+/**
+ * The stall windows on a client's own timeline, in milliseconds from its start.
+ *
+ * Computed from the parameters and the phase rather than detected in the
+ * samples, because shading fitted to the data it is meant to explain is a
+ * drawing of itself.
+ *
+ * The partial window at the front is the part that is easy to miss and was.
+ * A client whose `phase` is 11ms did not arrive at a healthy server: it arrived
+ * 11ms into a 400ms stall, so its first window runs from 0 to 389 and the first
+ * *whole* one starts at 1989. Predicting only the whole ones left a measured
+ * 412ms gap at t=0 with no shading under it, which would have read as the
+ * closed loop going quiet for no reason at all.
+ */
+export function stallWindows(phase, { stallMs, stallEveryMs }, durationMs) {
+  const out = []
+  if (phase < stallMs) out.push([0, Math.min(stallMs - phase, durationMs)])
+  for (let start = (stallEveryMs - phase) % stallEveryMs; start < durationMs; start += stallEveryMs) {
+    if (start === 0) continue
+    out.push([start, Math.min(start + stallMs, durationMs)])
+  }
+  return out.sort((a, b) => a[0] - b[0])
 }
 
 /** The ratio at every percentile, and where it is widest. */

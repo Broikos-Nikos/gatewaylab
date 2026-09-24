@@ -85,10 +85,35 @@ const open = {
 
 const { ratios, widest } = compare(closed, open)
 
+/*
+ * One run's samples, kept for the page, and it is the median run rather than
+ * the best.
+ *
+ * The picture this project makes is the closed loop's sends going quiet for the
+ * length of each stall, and a summary cannot show that. Measured before
+ * deciding to keep them: 176 closed and 600 open samples come to 7.9 KB of JSON,
+ * which is nothing against the argument they carry.
+ *
+ * The median by p95 ratio, so the run on screen is the run the headline
+ * describes. Picking the widest would be choosing the picture that argues best,
+ * which is the thing this project is about.
+ */
+const byRatio = runs
+  .map((r, i) => ({ i, ratio: r.closed.p95 ? r.open.p95 / r.closed.p95 : 0 }))
+  .sort((a, b) => a.ratio - b.ratio)
+const shown = runs[byRatio[Math.floor(byRatio.length / 2)].i]
+
 const result = {
   measured: new Date().toISOString().slice(0, 10),
   drill: DRILL,
   harnesses: [closed, open],
+  shown: {
+    what: 'the median run by p95 ratio, which is the run the headline describes',
+    stallPhase: shown.stallPhase,
+    samples: shown.samples,
+    closedRequests: shown.closed.requests,
+    openRequests: shown.open.requests,
+  },
   runs: runs.map((r) => ({
     closedRequests: r.closed.requests,
     closedP95: r.closed.p95,
@@ -129,6 +154,8 @@ console.log()
 console.log('ratio, open over closed: ' + PERCENTILES.map((q) => `p${q} ${ratios[`p${q}`]}x`).join('   '))
 console.log(`widest at ${widest.percentile}: ${closed[widest.percentile]}ms against ${open[widest.percentile]}ms`)
 console.log(`the closed loop sent ${closed.requests} where ${result.verdict.intendedRequests} were due: ${Math.round(result.verdict.sentShareOfIntended * 100)}%`)
+console.log()
+console.log(`the run kept for the page: ${shown.closed.requests} closed and ${shown.open.requests} open samples, ${(JSON.stringify(shown.samples).length / 1024).toFixed(1)} KB`)
 console.log()
 console.log(`the harness's own dispatch slip: p99 ${open.slip.p99}ms, max ${open.slip.max}ms, ${open.slip.lateBy5ms} of ${open.requests} more than 5ms late`)
 console.log(`which is ${(result.verdict.slipShareOfEffect * 100).toFixed(1)}% of the ${result.verdict.effectMs}ms effect it is reporting`)
