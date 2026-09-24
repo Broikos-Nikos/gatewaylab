@@ -18,7 +18,13 @@
 import { spawn } from 'node:child_process'
 import { serve } from './serve.mjs'
 
-const GATES = ['check:page', 'check:capture']
+/*
+ * check:capture joins this list when npm run capture exists. It was left in when
+ * this file was copied from evalkit, so npm run verify reported "1 of 2 browser
+ * gates failed" against a project that simply has no capture yet, and that
+ * failure was committed once before anybody read the line under the build.
+ */
+const GATES = ['check:page']
 
 const server = await serve()
 let failed = 0
