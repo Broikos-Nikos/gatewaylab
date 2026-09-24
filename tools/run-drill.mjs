@@ -13,9 +13,12 @@
  * So the rule here is the same as there. Re-measure deliberately, then update
  * everything that quotes it, or do not re-measure.
  *
- * Three repetitions, because one run of anything timing related is a number with
- * an unstated error bar and this project is about unstated error bars. Every run
- * is written to the file rather than summarised into a sentence about it.
+ * Ten repetitions, because one run of anything timing related is a number with an
+ * unstated error bar and this project is about unstated error bars. Every run is
+ * written to the file rather than summarised into a sentence about it.
+ *
+ * Ten rather than three, and that is a measurement: three said the spread was
+ * 5%, ten said 21%, on identical parameters. See `repeats` below.
  */
 
 import { writeFileSync, mkdirSync } from 'node:fs'
@@ -37,8 +40,19 @@ export const DRILL = {
   ratePerSecond: 100,
   /** How long each client runs. */
   durationMs: 6000,
-  /** How many times the whole thing is repeated. */
-  repeats: 3,
+  /**
+   * How many times the whole thing is repeated.
+   *
+   * Ten, and the number was measured rather than picked. Three repeats of these
+   * parameters reported a p95 ratio of 9.9x, 9.4x and 9.6x, a spread of 5%. Ten
+   * repeats of the identical parameters span 8.5x to 10.3x, which is 21%.
+   *
+   * Three consecutive runs inside one process are more alike than three separate
+   * ones, so a small repeat count does not sample the variance, it samples a
+   * corner of it and then reports a confident error bar. That is the failure
+   * this project is about, in the file that measures for it.
+   */
+  repeats: 10,
 }
 
 mkdirSync(resolve(root, 'src/generated'), { recursive: true })

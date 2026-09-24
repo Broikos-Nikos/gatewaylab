@@ -6,81 +6,130 @@
     "stallEveryMs": 2000,
     "ratePerSecond": 100,
     "durationMs": 6000,
-    "repeats": 3
+    "repeats": 10
   },
   "harnesses": [
     {
       "harness": "closed loop, send and wait",
-      "requests": 185,
-      "max": 417,
-      "p50": 30,
-      "p75": 31,
+      "requests": 174,
+      "max": 426,
+      "p50": 31,
+      "p75": 32,
       "p90": 32,
-      "p95": 34,
-      "p99": 411,
+      "p95": 33,
+      "p99": 409,
       "slip": null
     },
     {
       "harness": "open loop, send on the clock",
       "requests": 600,
-      "max": 421,
-      "p50": 31,
-      "p75": 43,
-      "p90": 227,
-      "p95": 326,
-      "p99": 405,
+      "max": 436,
+      "p50": 34,
+      "p75": 44,
+      "p90": 236,
+      "p95": 336,
+      "p99": 414,
       "slip": {
         "p50": 6,
         "p75": 10,
         "p90": 13,
         "p95": 14,
         "p99": 15,
-        "max": 16,
-        "lateBy5ms": 319
+        "max": 17,
+        "lateBy5ms": 323
       }
     }
   ],
   "runs": [
     {
-      "closedRequests": 185,
+      "closedRequests": 174,
+      "closedP95": 37,
+      "openP95": 362,
+      "p95Ratio": 9.8,
+      "openSlipP99": 20
+    },
+    {
+      "closedRequests": 162,
+      "closedP95": 33,
+      "openP95": 336,
+      "p95Ratio": 10.2,
+      "openSlipP99": 14
+    },
+    {
+      "closedRequests": 186,
+      "closedP95": 35,
+      "openP95": 339,
+      "p95Ratio": 9.7,
+      "openSlipP99": 15
+    },
+    {
+      "closedRequests": 339,
+      "closedP95": 27,
+      "openP95": 337,
+      "p95Ratio": 12.5,
+      "openSlipP99": 14
+    },
+    {
+      "closedRequests": 182,
+      "closedP95": 33,
+      "openP95": 335,
+      "p95Ratio": 10.2,
+      "openSlipP99": 15
+    },
+    {
+      "closedRequests": 174,
+      "closedP95": 33,
+      "openP95": 334,
+      "p95Ratio": 10.1,
+      "openSlipP99": 16
+    },
+    {
+      "closedRequests": 162,
+      "closedP95": 32,
+      "openP95": 337,
+      "p95Ratio": 10.5,
+      "openSlipP99": 15
+    },
+    {
+      "closedRequests": 159,
+      "closedP95": 32,
+      "openP95": 335,
+      "p95Ratio": 10.5,
+      "openSlipP99": 15
+    },
+    {
+      "closedRequests": 161,
+      "closedP95": 33,
+      "openP95": 333,
+      "p95Ratio": 10.1,
+      "openSlipP99": 15
+    },
+    {
+      "closedRequests": 177,
       "closedP95": 34,
       "openP95": 335,
       "p95Ratio": 9.9,
-      "openSlipP99": 15
-    },
-    {
-      "closedRequests": 184,
-      "closedP95": 34,
-      "openP95": 320,
-      "p95Ratio": 9.4,
-      "openSlipP99": 15
-    },
-    {
-      "closedRequests": 185,
-      "closedP95": 34,
-      "openP95": 326,
-      "p95Ratio": 9.6,
       "openSlipP99": 15
     }
   ],
   "verdict": {
     "ratios": {
-      "p50": 1,
+      "p50": 1.1,
       "p75": 1.4,
-      "p90": 7.1,
-      "p95": 9.6,
+      "p90": 7.4,
+      "p95": 10.2,
       "p99": 1
     },
     "widest": {
       "percentile": "p95",
-      "ratio": 9.6
+      "ratio": 10.2
     },
-    "requestsClosed": 185,
+    "requestsClosed": 174,
     "requestsOpen": 600,
     "intendedRequests": 600,
-    "sentShareOfIntended": 0.31,
+    "sentShareOfIntended": 0.29,
     "slipP99": 15,
-    "effectMs": 292,
-    "slipShareOfEffect": 0.051
+    "effectMs": 303,
+    "slipShareOfEffect": 0.05
   }
 }
