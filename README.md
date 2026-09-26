@@ -1,9 +1,9 @@
 # gatewaylab
 
-### The same server, six seconds: 33ms at p95, or 337ms.
+### The same server, six seconds: 32.5ms at p95, or 337ms.
 
 Two load harnesses against one server that answers in 5ms and stalls 400ms every
-2000ms. The obvious one reports 33ms. The correct one reports 337ms.
+2000ms. The obvious one reports 32.5ms. The correct one reports 337ms.
 
 ![Two rows on one six second timeline. Shaded bands mark the stalls. Under every band the closed loop's row is empty except for a single tall mark, because it is waiting rather than sending. The open loop's row has a solid wedge of requests sloping down, everything that piled up while the server was silent](docs/gatewaylab.png)
 
@@ -29,21 +29,21 @@ who clicked.
 
 | harness | requests | p50 | p75 | p90 | p95 | p99 |
 |---|---|---|---|---|---|---|
-| closed loop, send and wait | 182 | 30 | 31 | 32 | 33 | 419 |
-| open loop, send on the clock | 600 | 33 | 44 | 238 | 337 | 416 |
+| closed loop, send and wait | 161 | 31.5 | 32 | 32 | 32.5 | 419 |
+| open loop, send on the clock | 600 | 35 | 45 | 238 | 337 | 416.5 |
 
-The ratio, open over closed: 1.1x | 1.4x | 7.4x | 10.2x | 1x
+The ratio, open over closed: 1.1x | 1.4x | 7.4x | 10.4x | 1x
 
-**The closed loop sent 182 requests where 600 were due**, which is 30% of them.
+**The closed loop sent 161 requests where 600 were due**, which is 27% of them.
 That is the mechanism rather than the symptom: it did not measure the stall
 wrongly, it stopped asking during the stall.
 
 ## The part that would have fooled me, and did
 
-**At p99 the two harnesses agree.** 419ms against 416ms, a ratio of 1x. The first
+**At p99 the two harnesses agree.** 419ms against 416.5ms, a ratio of 1x. The first
 version of this drill reported p99 alone and the effect appeared not to exist.
 
-It exists and it is a factor of 10.2, at p95. The server is unhealthy 20% of the
+It exists and it is a factor of 10.4, at p95. The server is unhealthy 20% of the
 time, so the open loop's tail begins around p80, and by p99 both harnesses are
 deep inside a stall and report the same stall length.
 
@@ -55,7 +55,7 @@ loop harness by choosing which one, and nobody reading it would know.
 
 The open loop's schedule is kept by `setTimeout`, and `setTimeout` is not a
 clock. Its dispatch slips behind the schedule by **15ms at p99**, which is 4.9%
-of the 304ms effect it reports.
+of the 304.5ms effect it reports.
 
 Against this stall that is noise and the run stands. Against a 10ms difference
 between two providers it would be the entire result. A load test that does not
@@ -67,10 +67,10 @@ where it is large against the effect.
 
 Ten repeats, and the p95 ratio across them:
 
-10.3x, 10.1x, 10.2x, 10.6x, 10.1x, 10x, 10.2x, 10.2x, 10x, 10.2x
+10.7x, 10.7x, 10.5x, 10x, 10.5x, 10.5x, 10.3x, 10.2x, 10.4x, 10.2x
 
-The middle half spans **10.1x to 10.2x**, which is 1%. The full range is 10x to
-10.6x.
+The middle half spans **10.2x to 10.5x**, which is 3%. The full range is 10x to
+10.7x.
 
 The spread is measured across the middle half rather than the ends, and that
 correction is worth the paragraph. Min to max grows with the sample size by

@@ -1,5 +1,5 @@
 {
-  "recorded": "2026-09-24",
+  "recorded": "2026-09-26",
   "clip": {
     "x": 0,
     "y": 400,
@@ -21,17 +21,17 @@
       "band": "rgb(42, 28, 18)"
     },
     "words": {
-      "headline": "The same server, six seconds: 33ms at p95, or 337ms.",
+      "headline": "The same server, six seconds: 32.5ms at p95, or 337ms.",
       "wordmark": "GATEWAYLAB",
-      "status": "Shaded: the server is not answering. The closed loop's row goes empty under every band, because it is waiting rather than sending. It finished 181 requests where 600 were due.",
+      "status": "Shaded: the server is not answering. The closed loop's row goes empty under every band, because it is waiting rather than sending. It finished 165 requests where 600 were due.",
       "rowLabels": "closed loop, send and wait | open loop, send on the clock"
     },
     "state": {
       "rows": 2,
-      "marks": 781,
+      "marks": 765,
       "bands": 8,
-      "slow": 76,
-      "insideBands": "2,120"
+      "slow": 74,
+      "insideBands": "1,120"
     }
   }
 }

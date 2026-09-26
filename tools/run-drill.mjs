@@ -60,7 +60,21 @@ mkdirSync(resolve(root, 'src/generated'), { recursive: true })
 const runs = []
 for (let i = 0; i < DRILL.repeats; i++) runs.push(await runOnce(DRILL))
 
-const median = (xs) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
+/*
+ * The middle, or the mean of the two middles.
+ *
+ * Swept out of watch-it-think's WD2-F5 at tick 179. `repeats` is ten, an even
+ * number, so the old line took the sixth smallest of ten and called it the
+ * median: every figure on this page was half a sample high. The number of
+ * repeats was chosen by measuring the spread, not so that the count would be
+ * odd, and a statistic that depends on that is a statistic waiting for
+ * somebody to change a constant.
+ */
+const median = (xs) => {
+  const sorted = [...xs].sort((a, b) => a - b)
+  const middle = sorted.length >> 1
+  return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2
+}
 const pick = (which, key) => median(runs.map((r) => r[which][key]))
 const pickSlip = (key) => median(runs.map((r) => r.open.slip[key]))
 
