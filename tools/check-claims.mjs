@@ -94,6 +94,49 @@ if (loose.length > 0) {
   console.log('  ok      every latency in README.md is one the run produces')
 }
 
+/*
+ * And the ratios, which are the figure this README actually argues with.
+ *
+ * The latency sweep above has been here since the gate was written; the
+ * multiples had nothing. `watch-it-think`'s WD2-F8 was a header promising to
+ * count where the code compared to zero, and the sweep that answered it here
+ * covered one shape out of the three this project states: milliseconds,
+ * multiples, percentages. Ten distinct multiples sit in this README and every
+ * one of them comes out of `drill.json`, so this needs no exemptions at all,
+ * which is the reason to add it rather than a reason not to.
+ *
+ * Percentages are left out on purpose. Four of the eight are arithmetic done
+ * in the prose itself, 15ms over a 304.5ms effect is 4.9 percent and 10.2x to
+ * 10.5x is 3 percent, and a sweep whose exemption list is half its matches
+ * teaches the next reader to add a line to the list.
+ */
+const multiples = new Set()
+const addMultiple = (x) => {
+  if (typeof x !== 'number') return
+  multiples.add(String(x))
+  multiples.add(x.toFixed(1))
+  multiples.add(x.toFixed(2))
+  multiples.add(String(Math.round(x)))
+}
+const walkNumbers = (o) => {
+  if (o === null || o === undefined) return
+  if (Array.isArray(o)) return o.forEach(walkNumbers)
+  if (typeof o === 'object') return Object.values(o).forEach(walkNumbers)
+  addMultiple(o)
+}
+walkNumbers(d)
+const strayRatios = [...new Set([...flat.matchAll(/\b(\d+(?:\.\d+)?)x\b/g)].map((m) => m[1]))].filter(
+  (x) => !multiples.has(x),
+)
+if (strayRatios.length > 0) {
+  fail(
+    `the README states ${strayRatios.length} multiple${strayRatios.length === 1 ? '' : 's'} the run does not produce`,
+    strayRatios.map((x) => `${x}x`).join(', '),
+  )
+} else {
+  console.log('  ok      every multiple in README.md is one the run produces')
+}
+
 if (failed > 0) {
   console.error('\nA number a reader can check is a number that has to be checked here first.')
   process.exit(1)
