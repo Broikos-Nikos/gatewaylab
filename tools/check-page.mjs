@@ -170,6 +170,48 @@ try {
     )
   }
 
+  /*
+   * And the slow requests are still the slow ones when the reader picks the
+   * colours.
+   *
+   * Swept out of watch-it-think's WP-F9 at tick 175. This page says one thing,
+   * that the closed harness stalls and the open one does not, and it says it
+   * with colour: 76 flame marks among 781 grey. Measured before the fix, with
+   * forced colours active, both arrived as rgb(255, 255, 255) and the finding
+   * left the picture. The CSS now names Highlight and CanvasText there, two
+   * colours the system guarantees are distinguishable, so the distinction
+   * survives in the reader's palette instead of by overriding it.
+   */
+  const forced = await browser.newContext({ viewport: { width: 1280, height: 1000 }, forcedColors: 'active' })
+  const fpage = await forced.newPage()
+  await fpage.goto(server.url)
+  await fpage.waitForFunction(() => document.querySelectorAll('.mark').length > 0, null, { timeout: 60_000 })
+  const marks = await fpage.evaluate(() => {
+    const look = (sel) => {
+      const n = document.querySelector(sel)
+      return n ? getComputedStyle(n).backgroundColor : null
+    }
+    return {
+      plain: look('.mark:not(.mark--slow)'),
+      slow: look('.mark--slow'),
+      counts: [document.querySelectorAll('.mark:not(.mark--slow)').length, document.querySelectorAll('.mark--slow').length],
+    }
+  })
+
+  if (!marks.plain || !marks.slow) {
+    fail('under forced colours the timeline has no marks to compare', JSON.stringify(marks))
+  } else if (marks.plain === marks.slow) {
+    fail(
+      `under forced colours all ${marks.counts[0] + marks.counts[1]} marks are ${marks.slow}`,
+      `${marks.counts[1]} of them are the slow requests this page exists to show, and they are the same colour as the other ${marks.counts[0]}.`,
+    )
+  } else {
+    console.log(
+      `  ok      under forced colours the ${marks.counts[1]} slow marks are ${marks.slow} against ${marks.plain} for the other ${marks.counts[0]}`,
+    )
+  }
+  await forced.close()
+
   await browser.close()
 } finally {
   server.stop()
