@@ -66,7 +66,7 @@ try {
   const browser = await chromium.launch()
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
   await page.goto(server.url, { waitUntil: 'domcontentloaded' })
-  await page.waitForFunction(() => document.querySelectorAll('.mark').length > 0, null, { timeout: 60_000 })
+  await page.waitForFunction(() => document.querySelectorAll('[data-mark]').length > 0, null, { timeout: 60_000 })
   await page.waitForTimeout(250)
 
   const now = await page.evaluate(lookAt)

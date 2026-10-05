@@ -55,6 +55,7 @@ function row(
 ): HTMLElement {
   const wrap = document.createElement('div')
   wrap.className = 'row'
+  wrap.dataset.row = ''
   wrap.dataset.row = label
 
   const head = document.createElement('div')
@@ -74,6 +75,7 @@ function row(
   for (const [from, to] of stallWindows(phase, cfg, cfg.durationMs)) {
     const band = document.createElement('div')
     band.className = 'band'
+    band.dataset.band = ''
     band.style.left = `${(from / cfg.durationMs) * 100}%`
     band.style.width = `${((to - from) / cfg.durationMs) * 100}%`
     track.append(band)
@@ -83,7 +85,11 @@ function row(
   for (const [at, took] of samples) {
     const mark = document.createElement('div')
     mark.className = 'mark'
-    if (took > cfg.stallMs / 2) mark.classList.add('mark--slow')
+    mark.dataset.mark = ''
+    if (took > cfg.stallMs / 2) {
+      mark.classList.add('mark--slow')
+      mark.dataset.slow = ''
+    }
     mark.style.left = `${(at / cfg.durationMs) * 100}%`
     mark.style.height = `${Math.max(2, (took / ceiling) * 100)}%`
     mark.title = `sent at ${at}ms, took ${took}ms`

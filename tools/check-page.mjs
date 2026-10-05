@@ -66,7 +66,7 @@ try {
   const browser = await chromium.launch()
   const page = await browser.newPage({ viewport: { width: 1400, height: 1200 } })
   await page.goto(server.url, { waitUntil: 'domcontentloaded' })
-  await page.waitForFunction(() => document.querySelectorAll('.mark').length > 0, null, { timeout: 60_000 })
+  await page.waitForFunction(() => document.querySelectorAll('[data-mark]').length > 0, null, { timeout: 60_000 })
 
   // innerText, not textContent: the question is what a visitor is looking at.
   const seen = (await page.evaluate(() => document.body.innerText)).replace(/\s+/g, ' ')
@@ -85,10 +85,10 @@ try {
    * so the comparison is against the data rather than against pixels.
    */
   const drawn = await page.evaluate(() =>
-    [...document.querySelectorAll('.row')].map((r) => ({
+    [...document.querySelectorAll('[data-row]')].map((r) => ({
       label: r.dataset.row,
-      marks: [...r.querySelectorAll('.mark')].map((m) => parseFloat(m.style.left)),
-      bands: [...r.querySelectorAll('.band')].map((b) => [parseFloat(b.style.left), parseFloat(b.style.width)]),
+      marks: [...r.querySelectorAll('[data-mark]')].map((m) => parseFloat(m.style.left)),
+      bands: [...r.querySelectorAll('[data-band]')].map((b) => [parseFloat(b.style.left), parseFloat(b.style.width)]),
     })),
   )
 
@@ -185,7 +185,7 @@ try {
   const forced = await browser.newContext({ viewport: { width: 1280, height: 1000 }, forcedColors: 'active' })
   const fpage = await forced.newPage()
   await fpage.goto(server.url)
-  await fpage.waitForFunction(() => document.querySelectorAll('.mark').length > 0, null, { timeout: 60_000 })
+  await fpage.waitForFunction(() => document.querySelectorAll('[data-mark]').length > 0, null, { timeout: 60_000 })
   const marks = await fpage.evaluate(() => {
     const look = (sel) => {
       const n = document.querySelector(sel)
@@ -194,7 +194,7 @@ try {
     return {
       plain: look('.mark:not(.mark--slow)'),
       slow: look('.mark--slow'),
-      counts: [document.querySelectorAll('.mark:not(.mark--slow)').length, document.querySelectorAll('.mark--slow').length],
+      counts: [document.querySelectorAll('[data-mark]:not([data-slow])').length, document.querySelectorAll('[data-mark][data-slow]').length],
     }
   })
 
