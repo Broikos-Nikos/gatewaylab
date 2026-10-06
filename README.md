@@ -2,6 +2,8 @@
 
 ### The same server, six seconds: 32.5ms at p95, or 337ms.
 
+**[The page is live.](https://broikos-nikos.github.io/gatewaylab/)** The two rows are one run.
+
 Two load harnesses against one server that answers in 5ms and stalls 400ms every
 2000ms. The obvious one reports 32.5ms. The correct one reports 337ms.
 
