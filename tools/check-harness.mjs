@@ -70,11 +70,15 @@ const { server, port } = await startServer(LIVE)
 const url = `http://127.0.0.1:${port}/`
 let closed
 let open
+let closedSamples
+let openSamples
 try {
   const c = await closedLoop(url, LIVE.durationMs)
   const o = await openLoop(url, LIVE.durationMs, LIVE.ratePerSecond)
   closed = summarise('closed', c.latencies, c.slips)
   open = summarise('open', o.latencies, o.slips)
+  closedSamples = c.samples
+  openSamples = o.samples
   open.due = o.due
 } finally {
   server.close()
@@ -94,19 +98,82 @@ if (Math.abs(open.requests - due) > 1) {
 }
 
 /*
- * 2. And the closed loop does not, which is the finding rather than a defect.
+ * 2. And the closed loop stops sending while the server is silent, which is the
+ *    finding rather than a defect.
  *
- * Asserted rather than assumed, because if it ever sends the full count then
- * either the server stopped stalling or the two harnesses have become the same
- * thing, and both of those make every other number here meaningless.
+ * ## This assertion counted requests until the first deploy failed
+ *
+ * It was `closed.requests >= due * 0.9`, which is the closed loop's dispatch
+ * count held against the **open** loop's due count. Those are different
+ * quantities. The open loop's count is set by a rate; the closed loop's is set
+ * by how fast the machine can complete a request and come back, and that is a
+ * property of the machine. Measured at tick 217 on the same code, same server,
+ * same two second drill:
+ *
+ *     here, Windows      closed sent  50 of 200    25%    passed
+ *     ubuntu-latest      closed sent 241 of 200   120%    FAILED
+ *
+ * The threshold held locally because this machine's loopback and timer put
+ * 31ms between a response and the next request. The runner does it in 8, so
+ * the closed loop got round five times as often and sailed past a ceiling that
+ * was never about the closed loop at all. gatewaylab's first deploy failed on
+ * it, twenty minutes after the repository was created.
+ *
+ * ## What it asks now
+ *
+ * The mechanism, which does not move between machines: under a stall the
+ * closed loop is waiting rather than sending, so the gap between two of its
+ * consecutive dispatches spans the stall. The open loop keeps dispatching on
+ * its clock, so its largest gap stays near its own interval. Measured here:
+ *
+ *     closed  50 dispatches, max gap 316ms, median  31ms
+ *     open   200 dispatches, max gap  10ms, median  10ms
+ *     the stall is 300ms, the open loop's nominal gap is 10ms
+ *
+ * A faster machine shrinks the closed loop's median and leaves its max gap
+ * where it is, because the stall is the server's and not the harness's. That
+ * is the whole difference between a proxy and the thing.
  */
-if (closed.requests >= due * 0.9) {
+const biggestGap = (samples) => {
+  const at = samples.map((s) => s[0]).sort((a, b) => a - b)
+  let worst = 0
+  for (let i = 1; i < at.length; i++) worst = Math.max(worst, at[i] - at[i - 1])
+  return worst
+}
+
+const closedGap = biggestGap(closedSamples)
+const openGap = biggestGap(openSamples)
+
+/*
+ * A stall first, because without one this assertion cannot fail.
+ *
+ * Found by its own control: setting `stallMs` to 0 to take the mechanism away
+ * left `closedGap >= 0` passing trivially and the failure surfaced two
+ * assertions later, on the open loop, with a message about the open loop
+ * pausing. A gate that reports the wrong thing when its premise is removed is
+ * a gate whose premise is not checked.
+ */
+if (!(LIVE.stallMs > 0) || !(LIVE.stallMs > 1000 / LIVE.ratePerSecond)) {
   fail(
-    `the closed loop dispatched ${closed.requests} of ${due}, which is not a closed loop under a stall`,
-    'Either the server is not stalling or the two harnesses are now the same shape.',
+    `the drill stalls for ${LIVE.stallMs}ms against a ${1000 / LIVE.ratePerSecond}ms dispatch interval, so there is nothing here for a closed loop to wait out`,
+    'This project compares two harnesses under a stall. Without one they are the same harness and every number below is noise.',
+  )
+} else if (!(closedGap >= LIVE.stallMs * 0.9)) {
+  /* Nine tenths of the stall, because the gap is bounded by when the request
+     that met the stall was dispatched and the stall can start mid request. */
+  fail(
+    `the closed loop's longest gap between dispatches is ${closedGap}ms and the server stalls for ${LIVE.stallMs}ms`,
+    'Either the server is not stalling or the closed loop is not waiting for it, and both make every other number here meaningless.',
+  )
+} else if (!(openGap < LIVE.stallMs / 2)) {
+  fail(
+    `the open loop's longest gap between dispatches is ${openGap}ms, against a ${1000 / LIVE.ratePerSecond}ms interval and a ${LIVE.stallMs}ms stall`,
+    'An open loop that pauses while the server is slow is a closed loop wearing its name.',
   )
 } else {
-  console.log(`  ok      the closed loop dispatched ${closed.requests} of ${due}, ${Math.round((100 * closed.requests) / due)}% of them`)
+  console.log(
+    `  ok      the closed loop's longest gap is ${closedGap}ms across the ${LIVE.stallMs}ms stall, the open loop's is ${openGap}ms on a ${1000 / LIVE.ratePerSecond}ms interval`,
+  )
 }
 
 /*
