@@ -33,8 +33,8 @@
  * that is that they are recordings.
  */
 
-import { mkdirSync, writeFileSync, statSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { mkdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 import { serve } from './serve.mjs'
@@ -46,7 +46,12 @@ const OUT = resolve(root, 'docs/gatewaylab.png')
 /** The band, from the geometry above. */
 const CLIP = { x: 0, y: 400, width: 1280, height: 415 }
 
+/* The draft lives here. `.capture` is in .gitignore, so a half written still
+   cannot reach a commit. ACAP-F1. */
+const WORK = resolve(root, '.capture')
+
 mkdirSync(resolve(root, 'docs'), { recursive: true })
+mkdirSync(WORK, { recursive: true })
 
 const server = await serve()
 let looked
@@ -77,7 +82,25 @@ try {
     process.exit(1)
   }
 
-  await page.screenshot({ path: OUT, clip: CLIP })
+  /*
+   * The still is written to a draft and renamed, like the six GIFs elsewhere.
+   *
+   * ACAP-F1 is about ffmpeg, which opens its output and truncates it before it
+   * validates its filters, and that is not what Playwright does here. This is
+   * drafted anyway, because a half written screenshot is the same loss and the
+   * cost of ruling it out is two lines rather than an argument. Measured on
+   * agentscope's GIF at tick 223: 651,062 bytes to 0 from one wrong filter
+   * index.
+   */
+  /* `basename`, not a split on a forward slash. `resolve()` returns backslashes
+     on Windows, so OUT.split(/[/]/).pop() gives back the whole absolute path and
+     resolve(WORK, <absolute>) returns that same path: the draft would be the
+     committed file and the fix would be a no op. Measured at tick 223, before it
+     shipped. */
+  const draft = resolve(WORK, basename(OUT))
+  await page.screenshot({ path: draft, clip: CLIP })
+  renameSync(draft, OUT)
+  rmSync(WORK, { recursive: true, force: true })
   await browser.close()
 } finally {
   server.stop()
