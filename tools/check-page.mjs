@@ -85,6 +85,7 @@ try {
    * so the comparison is against the data rather than against pixels.
    */
   const drawn = await page.evaluate(() =>
+
     [...document.querySelectorAll('[data-row]')].map((r) => ({
       label: r.dataset.row,
       marks: [...r.querySelectorAll('[data-mark]')].map((m) => parseFloat(m.style.left)),
