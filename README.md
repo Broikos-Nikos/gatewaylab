@@ -2,13 +2,7 @@
 
 ### The same server, six seconds: 32.5ms at p95, or 337ms.
 
-<!-- No live link yet. This repository was deleted from GitHub on 7 October
-     under D27 and is scheduled to be uploaded again on 10 October, D28. The link
-     and the sentence below go back in on that day, which is step 5 of the
-     upload sequence in state/schedule.json. Until then a claim that the page
-     is live would be a claim nothing supports: the URL returned 404 when this
-     was written, measured. -->
-The two rows are one run.
+**[The page is live.](https://broikos-nikos.github.io/gatewaylab/)** The two rows are one run.
 
 Two load harnesses against one server that answers in 5ms and stalls 400ms every
 2000ms. The obvious one reports 32.5ms. The correct one reports 337ms.
