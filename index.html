@@ -5,13 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Two load harnesses, one server, six seconds. The obvious one reports 33ms at p95. The correct one reports 336ms, and stops sending during every stall."
+      content="Two load harnesses, one server, six seconds. The obvious one reports 32.5ms at p95. The correct one reports 337ms, and stops sending during every stall."
     />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23080604'/%3E%3Crect x='2' y='4' width='3' height='2' fill='%239a8f88'/%3E%3Crect x='9' y='4' width='5' height='2' fill='%239a8f88'/%3E%3Crect x='5' y='9' width='4' height='4' fill='%23ff6a00'/%3E%3C/svg%3E"
     />
     <title>gatewaylab</title>
+    <!--
+      The card a pasted link unfurls into. `tokenlab` RC-F11 was fixed in
+      `tokenlab` alone on 2026-09-24, and the sweep at tick 229 asked the same
+      question of the other seven with curl, which is what an unfurler sees
+      because none of these pages are rendered by a service running JavaScript:
+      six of the seven published pages carried none of the nine tags and handed
+      Slack, a mail client or LinkedIn a bare link.
+
+      `card.png` is in `public/` because that is what ships: `docs/` is in the
+      repository and not on the site, so an og:image pointing there unfurls into
+      a 404. The URL is absolute because a relative one is resolved against the
+      service's own domain rather than this page's. `npm run card` takes it at
+      1200 by 630, the size these services crop to, and records what was on
+      screen in `docs/card.json`, which is where the `theme-color` below comes from.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://broikos-nikos.github.io/gatewaylab/" />
+    <meta property="og:title" content="The same server, six seconds: 32.5ms at p95, or 337ms." />
+    <meta property="og:description" content="Two load harnesses, one server, six seconds. The obvious one reports 32.5ms at p95. The correct one reports 337ms, and stops sending during every stall." />
+    <meta property="og:image" content="https://broikos-nikos.github.io/gatewaylab/card.png" />
+    <meta property="og:image:alt" content="The first screen of the gatewaylab page, headed: The same server, six seconds: 32.5ms at p95, or 337ms" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://broikos-nikos.github.io/gatewaylab/card.png" />
+    <meta name="theme-color" content="#080604" />
   </head>
   <body>
     <header>
