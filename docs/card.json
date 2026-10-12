@@ -1,0 +1,38 @@
+{
+  "why": "What was on screen when public/card.png was taken, so a caption or an og:description can be held to the picture rather than to a memory of it.",
+  "made": "2026-10-12",
+  "viewport": {
+    "width": 1200,
+    "height": 630
+  },
+  "deviceScaleFactor": 1,
+  "bytes": 47682,
+  "seen": {
+    "title": "gatewaylab",
+    "background": "#080604",
+    "headline": "The same server, six seconds: 32.5ms at p95, or 337ms.",
+    "ogTitle": "The same server, six seconds: 32.5ms at p95, or 337ms.",
+    "ogImage": "https://broikos-nikos.github.io/gatewaylab/card.png",
+    "firstScreenChars": 397,
+    "numbers": [
+      "1",
+      "10",
+      "10.4",
+      "15",
+      "161",
+      "165",
+      "304.5",
+      "32.5",
+      "337",
+      "4.9",
+      "416.5",
+      "419",
+      "6",
+      "600",
+      "95",
+      "95,",
+      "99",
+      "99,"
+    ]
+  }
+}
