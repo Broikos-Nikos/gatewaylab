@@ -74,7 +74,16 @@
       <p class="caption" data-caption></p>
     </main>
 
-    <footer data-footer></footer>
+    <!-- The slip paragraph is written by main.ts from the measured run. The link
+         below it is in the markup rather than written with it, because a reader
+         whose bundle never arrives is exactly the reader who needs a way out,
+         GHEAD-F1 again in the one place it still applied. -->
+    <footer>
+      <p data-footer></p>
+      <p class="repo">
+        <a href="https://github.com/Broikos-Nikos/gatewaylab">Source, measurement and gates on GitHub</a>
+      </p>
+    </footer>
 
     <script type="module" src="/src/main.ts"></script>
   </body>

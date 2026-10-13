@@ -81,6 +81,46 @@ try {
   }
 
   /*
+   * The way out.
+   *
+   * `GEXIT-F1`, tick 232. This page had no link on it. Not one: zero `a`
+   * elements, zero tab stops, and `--focus` declared in the palette and never
+   * used, because there was nothing to focus. A reader arrives here from an
+   * unfurled card or a search result, reads an argument about load testing, and
+   * has no way to the source, the measurement, the gates or the licence. Two of
+   * the eight pages in this workspace carried the link and six did not.
+   *
+   * Both halves are asserted, and the second is the one with the failure mode.
+   * The link is in `index.html` so that a reader whose bundle never arrives
+   * still has it, which is `GHEAD-F1`'s lesson in the one place it still
+   * applied, and it is read back from the rendered page so that a future
+   * `el.footer.textContent =` cannot quietly delete it. It was inside the
+   * footer the script writes until this tick, which is exactly that mistake
+   * waiting to happen.
+   */
+  const REPO = 'https://github.com/Broikos-Nikos/gatewaylab'
+
+  if (!readFileSync(resolve(root, 'index.html'), 'utf8').includes(`href="${REPO}"`)) {
+    fail(
+      'index.html does not carry the repository link',
+      'A link written by the bundle is a link that is not there for the reader who never gets the bundle.',
+    )
+  }
+
+  const exits = await page.evaluate(() => [...document.querySelectorAll('a')].map((a) => ({ href: a.href, text: a.textContent.trim() })))
+  const back = exits.filter((a) => a.href.toLowerCase().startsWith('https://github.com/broikos-nikos/gatewaylab'))
+  if (back.length === 0) {
+    fail(
+      `the rendered page has ${exits.length} link${exits.length === 1 ? '' : 's'} and none of them goes to the repository`,
+      `expected ${REPO}. If it is in index.html and not here, something wrote over it after boot.`,
+    )
+  } else if (back.some((a) => a.text.length < 8)) {
+    fail('the repository link has no readable text', 'A link announced as "here" or as a bare URL is a link a screen reader cannot place.')
+  } else {
+    console.log(`  ok      the page has a way back to the source: ${JSON.stringify(back[0].text)}`)
+  }
+
+  /*
    * The drawing. Every mark and every band read back as a fraction of the track,
    * so the comparison is against the data rather than against pixels.
    */

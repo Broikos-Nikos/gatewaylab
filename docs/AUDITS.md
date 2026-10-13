@@ -34,3 +34,5 @@ kept here because commit messages cite them like any other.
 | `GHEAD-F2` | low | fixed, tick 232 | The headline in index.html is held against the build and against nothing else |
 | `GDESC-F1` | medium | fixed, tick 232 | The description a search result and an unfurl card show says the correct harness is the one that stops sending, and it is the obvious one |
 | `GTITLE-F1` | low | fixed, tick 232 | The title was the word gatewaylab, so the tab, the bookmark and the search result named the project and said nothing |
+| `GEXIT-F1` | medium | fixed, tick 232 | The page had no link on it at all, so a reader who arrived from a card or a search result had no way to the source |
+| `GNAV-F1` | low | open | One h1 and no other heading, and the table section has no accessible name, so the page is one stop for a reader navigating by structure |

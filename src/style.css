@@ -147,6 +147,21 @@ footer {
   font-size: 0.8rem;
 }
 
+.repo { margin: 0.9rem 0 0 }
+
+a { color: var(--flame-bright) }
+
+/*
+ * --focus was declared with the palette and never used, because until tick 232
+ * there was nothing on this page to focus: no link, no control, no tab stop at
+ * all. The one link below needs it, and a keyboard visitor needs to see where
+ * they are more than a mouse visitor needs the page to look undisturbed.
+ */
+:where(a):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
 /* At phone width the four column row has nowhere to go, so it stacks. */
 @media (max-width: 40rem) {
   .track { height: 5rem }
