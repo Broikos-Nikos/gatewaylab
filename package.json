@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "card": "node tools/card.mjs",
     "typecheck": "tsc --noEmit",
-    "check": "npm run check:source && npm run check:licence && npm run check:drill && npm run check:harness && npm run check:spread && npm run check:claims",
+    "check": "npm run check:source && npm run check:licence && npm run check:drill && npm run check:harness && npm run check:spread && npm run check:claims && npm run check:headline",
     "check:source": "node tools/check-source.mjs",
     "check:drill": "node tools/check-drill.mjs",
     "check:harness": "node tools/check-harness.mjs",
@@ -21,6 +21,7 @@
     "capture": "node tools/capture.mjs",
     "check:capture": "node tools/check-capture.mjs",
     "check:claims": "node tools/check-claims.mjs",
+    "check:headline": "node tools/check-headline.mjs",
     "check:licence": "node tools/check-licence.mjs"
   },
   "devDependencies": {

@@ -31,4 +31,4 @@ kept here because commit messages cite them like any other.
 | `GPRO-F1` | medium | fixed, tick 181 | The claims header says figures are counted and only the latencies were swept, not the ten multiples |
 | `GPRE-F1` | low | fixed, tick 165 | npm run verify started a server and handed the same missing browser to every gate in turn |
 | `GPRO-F2` | low | fixed, tick 181 | check-promises' first rule asked for a variable name and failed a gate that was right |
-| `GHEAD-F2` | low | open | The headline in index.html is held against the build and against nothing else |
+| `GHEAD-F2` | low | fixed, tick 232 | The headline in index.html is held against the build and against nothing else |
