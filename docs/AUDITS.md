@@ -32,3 +32,5 @@ kept here because commit messages cite them like any other.
 | `GPRE-F1` | low | fixed, tick 165 | npm run verify started a server and handed the same missing browser to every gate in turn |
 | `GPRO-F2` | low | fixed, tick 181 | check-promises' first rule asked for a variable name and failed a gate that was right |
 | `GHEAD-F2` | low | fixed, tick 232 | The headline in index.html is held against the build and against nothing else |
+| `GDESC-F1` | medium | fixed, tick 232 | The description a search result and an unfurl card show says the correct harness is the one that stops sending, and it is the obvious one |
+| `GTITLE-F1` | low | fixed, tick 232 | The title was the word gatewaylab, so the tab, the bookmark and the search result named the project and said nothing |

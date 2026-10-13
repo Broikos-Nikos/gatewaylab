@@ -36,10 +36,19 @@
  * contains the right figures in the wrong order is still a sentence the page did
  * not measure.
  *
- * The figures are also required in the three sentences that are not the
+ * The figures are also required in the four sentences that are not the
  * headline, as phrases and never as bare numbers, because `5` and `10` and `100`
  * are all over this document and a gate that looks for `337` in a page
  * containing `337` proves nothing about where it is.
+ *
+ * ## The title is one of those four
+ *
+ * It read `gatewaylab` until tick 232, which is the tab, the bookmark, the
+ * browser history entry and the blue line in a search result all saying a word
+ * nobody has heard of. Three of the eight projects here already carry a sentence
+ * there and five do not, so this is a class and this is one of the five. Holding
+ * it to both figures is what stops it going back to a wordmark: a rule that only
+ * said "not the project name" would pass on any other word.
  */
 
 import { readFileSync } from 'node:fs'
@@ -114,6 +123,7 @@ const PHRASES = [
 ]
 
 const CARRIERS = [
+  ['the title, which is the tab, the bookmark and the search result', /<title>([^<]*)<\/title>/],
   ['the description a search result shows', /<meta\s+name="description"\s+content="([^"]*)"/],
   ['og:description, the card under the link', /<meta\s+property="og:description"\s+content="([^"]*)"/],
   ['og:image:alt, the card for a reader who cannot see it', /<meta\s+property="og:image:alt"\s+content="([^"]*)"/],
